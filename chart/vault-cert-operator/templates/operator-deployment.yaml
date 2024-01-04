@@ -1,0 +1,52 @@
+# templates/operator-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-cert-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: vault-cert-operator
+  template:
+    metadata:
+      labels:
+        name: vault-cert-operator
+    spec:
+      containers:
+      - name: vault-cert-operator
+        image: your-namespace/vault-cert-operator:latest
+        command: ["vault-cert-operator"]
+        args: ["--namespace=$(NAMESPACE)"]
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-cert-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: vault-cert-operator
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: vault-cert-operator
+subjects:
+- kind: ServiceAccount
+  name: vault-cert-operator
+roleRef:
+  kind: Role
+  name: vault-cert-operator
+  apiGroup: rbac.authorization.k8s.io
