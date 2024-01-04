@@ -3,5 +3,7 @@ The Vault-Cert-Operator is a Kubernetes Operator designed to facilitate the retr
 
 # init vault-cert-operator project
 
+```
 go mod init svc.ink/m/v2
 operator-sdk init --plugins go/v4 --domain svc.ink --owner "Haitao Pan"
+```
